@@ -1,28 +1,37 @@
 import { Command } from "../../../common/command/Command";
 import ApplicationError from "../../../common/errors/ApplicationError";
-import IAdminRepository from "../../../contracts/repositories/IUsersRepository";
-import Admin from "../../entities/Admin";
-import { InvalidPassword, UserNotFound } from "../../errors/CommandsErrors";
-import { DataAccessException, DataAccessOperationException, ItemNotFoundException } from "../../errors/DataAccessExceptions";
+import IUser from "../../../contracts/entities/IUser";
+import IUserRepository from "../../../contracts/repositories/IUserRepository";
+import { InvalidEmail, InvalidPassword, UserNotFound } from "../../errors/CommandErrors";
+import { DataAccessOperationException, ItemNotFoundException } from "../../errors/DataAccessExceptions";
+import AuthValidator from "./AuthValidator";
 
 type LoginCommandModel = {
     email: string;
     password: string;
 }
 
-class LoginCommand extends Command<LoginCommandModel, Admin> {
+class LoginCommand extends Command<LoginCommandModel, IUser> {
 
-    constructor(loginInfo: LoginCommandModel, private readonly _adminRepository: IAdminRepository) {
+    constructor(loginInfo: LoginCommandModel, private readonly _userRepository: IUserRepository) {
         super(loginInfo);
     }
 
-    public execute(): Admin | ApplicationError {
+
+    public execute(): IUser | ApplicationError {
         try {
-            const resultAdmin = this._adminRepository.getUserByEmail(this._parameters.email);
+            // validation
+            const emailValidation = AuthValidator.validateEmail(this._parameters.email);
+            if (emailValidation != null) return emailValidation;
 
-            if (resultAdmin.password != this._parameters.password) return new InvalidPassword();
+            const passwordValidation = AuthValidator.validatePassword(this._parameters.password);
+            if (passwordValidation != null) return passwordValidation;
 
-            return resultAdmin as Admin;
+            const resultUser = this._userRepository.getUserByEmail(this._parameters.email);
+
+            if (resultUser.password != this._parameters.password) return new UserNotFound();
+            
+            return resultUser;
 
         } catch (error) {
             if (error instanceof ItemNotFoundException) return new UserNotFound();

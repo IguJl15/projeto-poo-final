@@ -2,7 +2,7 @@ import { Command, NoParams } from "../../../common/command/Command";
 import ApplicationError from "../../../common/errors/ApplicationError";
 import { IProduct } from "../../../contracts/entities/IProduct";
 import { IProductRepository } from "../../../contracts/repositories/IProductRepository";
-import { UserNotFound } from "../../errors/CommandsErrors";
+import { UserNotFound } from "../../errors/CommandErrors";
 import { DataAccessException, DataAccessOperationException, ItemNotFoundException } from "../../errors/DataAccessExceptions";
 
 class ListAllProducts extends Command<NoParams, IProduct[]> {
@@ -16,7 +16,6 @@ class ListAllProducts extends Command<NoParams, IProduct[]> {
         try {
             return this._productRepository.getAllProducts();
         } catch (error) {
-            if (error instanceof ItemNotFoundException) return new UserNotFound();
             if (error instanceof DataAccessOperationException)
                 return new ApplicationError(
                     "Ocorreu um erro durante a requisição de produtos. Por favor, tente novamente em instantes.",

@@ -9,12 +9,12 @@ class DigitalProduct implements IProduct {
 
         public name: string,
         public description: string,
-        public value: number,
+        public price: number,
 
         public category: string,
 
         public createdAt: Date,
-        public updatedAt?: Date,
+        // public updatedAt?: Date,
         public deletedAt?: Date,
 
     ) { }

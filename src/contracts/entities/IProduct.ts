@@ -3,11 +3,11 @@ export interface IProduct {
 
     ownerId: number,
 
-    value: number,
     name: string,
     description: string
+    price: number,
 
     createdAt: Date,
-    updatedAt?: Date,
+    // updatedAt?: Date,
     deletedAt?: Date,
 }

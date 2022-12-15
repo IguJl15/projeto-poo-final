@@ -8,7 +8,7 @@ class Product implements IProduct {
         
         public name: string,
         public description: string,
-        public value: number,
+        public price: number,
 
         public brand: string,
 
@@ -16,7 +16,7 @@ class Product implements IProduct {
         public quantity: number,
 
         public createdAt: Date,
-        public updatedAt?: Date,
+        // public updatedAt?: Date,
         public deletedAt?: Date,
     ) { }
 }

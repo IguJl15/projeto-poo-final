@@ -11,8 +11,8 @@ class Admin implements IUser {
 
         readonly products: IProduct[],
 
-        readonly created_at: Date,
-        public updatedAt?: Date,
+        readonly createdAt: Date,
+        // public updatedAt?: Date,
         public deletedAt?: Date,
     ) { }
 }

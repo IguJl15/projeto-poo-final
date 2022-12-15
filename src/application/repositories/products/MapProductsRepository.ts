@@ -8,12 +8,13 @@ class MapProductsRepository implements IProductRepository {
 
     saveProduct(product: IProduct): number {
         try {
-            const id = product.id;
-            this._products.set(id, product);
+            if (product.id === 0) product.id = this.getNewId();
+            
+            this._products.set(product.id, product);
 
-            if (!this._products.has(id)) throw new ItemNotFoundException(id);
+            if (!this._products.has(product.id)) throw new ItemNotFoundException(product.id);
 
-            return id;
+            return product.id;
         } catch (error) {
             if (error instanceof DataAccessException) throw error;
             throw new RepositoryOperationException(`Error durante a operação de inserção no banco de dados: ${error}`);
@@ -30,20 +31,21 @@ class MapProductsRepository implements IProductRepository {
         return list;
     }
 
-    getProductsByOwnerId(id: number): IProduct[] {
+    getProductsByOwnerId(ownerId: number): IProduct[] {
         try {
-
             const list: IProduct[] = [];
             
             for (const item of this._products.values()) {
-                if (item.ownerId === id) list.push(item);
+                if (item.ownerId === ownerId) list.push(item);
             }
 
-            if (list.length === 0) throw new ItemNotFoundException(id);
+            if (list.length === 0) throw new ItemNotFoundException(ownerId);
 
-            return list
+            return list;
         } catch (error) {
-            if (error instanceof DataAccessException) throw error;
+            if (error instanceof ItemNotFoundException) throw error;
+            // console.log("ERRO NO REPO: ");
+            // console.log(error);
             throw new RepositoryOperationException(`Error durante a requisição ao banco de dados: ${error}`);
         }
     }
@@ -64,7 +66,6 @@ class MapProductsRepository implements IProductRepository {
 
     deleteById(id: number): boolean {
         try {
-
             if (!this._products.has(id)) throw new ItemNotFoundException(id);
 
             return this._products.delete(id);
@@ -73,6 +74,11 @@ class MapProductsRepository implements IProductRepository {
             throw new RepositoryOperationException(`Error durante a operação de deleção no banco de dados: ${error}`);
         }
     }
+
+    private getNewId(): number {
+        return (Array.from(this._products.keys()).pop() ?? 0) + 1;
+    }
+    
 }
 
 export default MapProductsRepository;

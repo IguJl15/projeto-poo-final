@@ -1,12 +1,12 @@
 interface IUser {
-    readonly id: number;
+    id: number;
     
     name: string;
     email: string;
     readonly password: string;
 
-    readonly created_at: Date;
-    updatedAt?: Date;
+    readonly createdAt: Date;
+    // updatedAt?: Date;
     deletedAt?: Date;
 }
 
